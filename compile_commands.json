@@ -1,0 +1,34 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/src/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/ZombieHorde",
+    "file": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/src/main.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/build/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Ithird_party",
+      "-c",
+      "-o",
+      "build/third_party/glad/glad.o",
+      "third_party/glad/glad.c"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/ZombieHorde",
+    "file": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/third_party/glad/glad.c",
+    "output": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/build/third_party/glad/glad.o"
+  }
+]

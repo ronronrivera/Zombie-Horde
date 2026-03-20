@@ -147,7 +147,7 @@ See [CREDITS.md](CREDITS.md) for the full list.
 - [x] Project structure and Makefile
 - [x] Window + OpenGL context (GLFW + GLAD)
 - [x] Fixed timestep game loop
-- [ ] FPS camera and WASD movement
+- [x] FPS camera and WASD movement
 - [ ] 3D tile map renderer
 - [ ] Billboard zombie sprites
 - [ ] Zombie seek-steering AI

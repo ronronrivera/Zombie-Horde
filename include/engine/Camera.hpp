@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 
+
 class Camera {
 public:
     Camera(glm::vec3 startPos = glm::vec3(0.0f, 0.0f, 3.0f));
@@ -19,6 +20,7 @@ public:
     glm::vec3 returnM_right() const {return m_right;}
     glm::vec3 returnM_up() const {return m_up;}
 
+    void setPosition(const glm::vec3& pos) { m_position = pos; }
 private:
     void updateVectors();   // recalculate front/right/up from yaw+pitch
 

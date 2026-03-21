@@ -148,7 +148,7 @@ See [CREDITS.md](CREDITS.md) for the full list.
 - [x] Window + OpenGL context (GLFW + GLAD)
 - [x] Fixed timestep game loop
 - [x] FPS camera and WASD movement
-- [ ] 3D tile map renderer
+- [x] 3D tile map renderer
 - [ ] Billboard zombie sprites
 - [ ] Zombie seek-steering AI
 - [ ] Wave spawner

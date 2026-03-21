@@ -3,82 +3,63 @@
 #include "engine/Input.hpp"
 #include "engine/Camera.hpp"
 #include "renderer/Shader.hpp"
-#include "renderer/Mesh.hpp"
-#include "renderer/Texture.hpp"
+#include "world/TileMap.hpp"
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <iostream>
 
 int main() {
     try {
-        Window window(1280, 720, "ZombieHorde");
+        Window  window(1280, 720, "ZombieHorde");
         Input::init(window.getHandle());
-        Camera camera(glm::vec3(0.0f, 1.0f, 4.0f));
 
-        // cube: 24 vertices (4 per face × 6 faces), each is x,y,z,u,v
-        std::vector<float> verts = {
-            // front
-            -0.5f,-0.5f, 0.5f,  0,0,   0.5f,-0.5f, 0.5f,  1,0,
-             0.5f, 0.5f, 0.5f,  1,1,  -0.5f, 0.5f, 0.5f,  0,1,
-            // back
-             0.5f,-0.5f,-0.5f,  0,0,  -0.5f,-0.5f,-0.5f,  1,0,
-            -0.5f, 0.5f,-0.5f,  1,1,   0.5f, 0.5f,-0.5f,  0,1,
-            // left
-            -0.5f,-0.5f,-0.5f,  0,0,  -0.5f,-0.5f, 0.5f,  1,0,
-            -0.5f, 0.5f, 0.5f,  1,1,  -0.5f, 0.5f,-0.5f,  0,1,
-            // right
-             0.5f,-0.5f, 0.5f,  0,0,   0.5f,-0.5f,-0.5f,  1,0,
-             0.5f, 0.5f,-0.5f,  1,1,   0.5f, 0.5f, 0.5f,  0,1,
-            // top
-            -0.5f, 0.5f, 0.5f,  0,0,   0.5f, 0.5f, 0.5f,  1,0,
-             0.5f, 0.5f,-0.5f,  1,1,  -0.5f, 0.5f,-0.5f,  0,1,
-            // bottom
-            -0.5f,-0.5f,-0.5f,  0,0,   0.5f,-0.5f,-0.5f,  1,0,
-             0.5f,-0.5f, 0.5f,  1,1,  -0.5f,-0.5f, 0.5f,  0,1,
-        };
+        TileMap map;
 
-        std::vector<unsigned int> idx;
-        for (int f = 0; f < 6; f++) {
-            unsigned int b = f * 4;
-            idx.insert(idx.end(), {b,b+1,b+2, b+2,b+3,b});
-        }
+        Camera  camera(map.getPlayerSpawn());
 
-        Mesh    cube(verts, idx);
-        Shader  shader("assets/shaders/world.vert",
-                       "assets/shaders/world.frag");
-
-        // drop any CC0 PNG into assets/textures/ and point to it here
-        Texture texture("assets/textures/walls/me.jpg");
+        Shader shader("assets/shaders/world.vert",
+                      "assets/shaders/world.frag");
 
         glEnable(GL_DEPTH_TEST);
 
+        // collision radius — how close to a wall centre you can get
+        constexpr float PLAYER_RADIUS = 0.25f;
+
         auto update = [&](float dt) {
+
             if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
                 glfwSetWindowShouldClose(window.getHandle(), true);
 
+            // Update camera first to read mouse delta before Input::update() resets it
+            glm::vec3 oldPos = camera.getPosition();
             camera.update(dt);
+
             Input::update();
+            glm::vec3 newPos = camera.getPosition();
+
+            // simple AABB wall slide — check X and Z separately
+            // so you slide along walls instead of stopping dead
+            glm::vec3 testX(newPos.x, oldPos.y, oldPos.z);
+            glm::vec3 testZ(oldPos.x, oldPos.y, newPos.z);
+
+            if (map.isWall(testX.x + PLAYER_RADIUS, testX.z) ||
+                map.isWall(testX.x - PLAYER_RADIUS, testX.z))
+                newPos.x = oldPos.x;
+
+            if (map.isWall(testZ.x, testZ.z + PLAYER_RADIUS) ||
+                map.isWall(testZ.x, testZ.z - PLAYER_RADIUS))
+                newPos.z = oldPos.z;
+
+            camera.setPosition(newPos);
+
         };
 
         auto render = [&]() {
             shader.bind();
-            texture.bind(0);
-            shader.setInt("uTexture", 0);
             shader.setMat4("uView",       camera.getViewMatrix());
             shader.setMat4("uProjection", camera.getProjectionMatrix());
-
-            // model matrix — rotate the cube slowly so we can see all sides
-            float angle = (float)glfwGetTime() * 30.0f;
-            glm::mat4 model = glm::rotate(
-                glm::mat4(1.0f),
-                glm::radians(angle),
-                glm::vec3(0.0f, 1.0f, 0.0f)
-            );
-            shader.setMat4("uModel", model);
-
-            cube.draw();
+            map.draw(shader);
         };
 
         GameLoop loop(window, update, render);

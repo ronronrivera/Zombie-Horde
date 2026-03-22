@@ -21,13 +21,18 @@ LINUX_LDFLAGS  := -lglfw -lGL -ldl -lassimp
 LINUX_TARGET   := ZombieHorde
 
 # ── Windows cross-compile flags ───────────────────────────
-WIN_INCLUDES := \
-    -Ithird_party/glfw-3.4.bin.WIN64/include \
-    -Ithird_party/glm \
-    -Ithird_party
+WIN_INCLUDES := -Ithird_party/glfw-3.4.bin.WIN64/include \
+                -Ithird_party/glm \
+                -Ithird_party \
+                -Ithird_party/glad \
+                -Ithird_party/assimp-win/include
 
-WIN_LDFLAGS := -Lthird_party/glfw-3.4.bin.WIN64/lib-mingw-w64 -lglfw3 -lopengl32 -lgdi32 -lassimp \
-               -static-libgcc -static-libstdc++
+WIN_LDFLAGS  := -Lthird_party/glfw-3.4.bin.WIN64/lib-mingw-w64 \
+                -Lthird_party/assimp-win/lib \
+                -lglfw3 -lopengl32 -lgdi32 \
+                -lassimp -lz \
+                -static-libgcc -static-libstdc++
+
 WIN_TARGET     := ZombieHorde.exe
 
 # ── build dirs ────────────────────────────────────────────

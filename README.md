@@ -3,7 +3,7 @@
 > A first-person zombie survival shooter built from scratch in C++17 and OpenGL 3.3 Core.  
 > No engine. No shortcuts. Just code, math, and a lot of undead.
 
-![Platform](https://img.shields.io/badge/platform-Linux-informational?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-informational?style=flat-square)
 ![Language](https://img.shields.io/badge/language-C%2B%2B17-blue?style=flat-square)
 ![OpenGL](https://img.shields.io/badge/OpenGL-3.3_Core-green?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen?style=flat-square)
@@ -34,28 +34,28 @@ Enemies are rendered as **billboard sprites** (DOOM-style) — 2D textures that 
 ---
 
 ## Screenshots
+
 ### Current Output
 https://github.com/user-attachments/assets/01eac872-bf32-4477-9b7e-e50dc434906d
 
 ---
 
-## Building
+## Building on Linux
 
 ### Requirements
 
-- Linux (tested on Linux Mint)
+- Linux Mint / Ubuntu or any Debian-based distro
 - `g++` with C++17 support
 - `libglfw3-dev`
 - `libgl-dev`
-- GLAD (included in `third_party/`)
-- GLM (included in `third_party/`)
-- stb_image (included in `third_party/`)
+- `libassimp-dev`
+- GLAD, GLM, stb_image (included in `third_party/`)
 
 ### Install dependencies
 
 ```bash
 sudo apt update
-sudo apt install build-essential libglfw3-dev libgl-dev
+sudo apt install build-essential libglfw3-dev libgl-dev libassimp-dev
 ```
 
 ### Compile and run
@@ -71,6 +71,153 @@ make release
 
 # clean build artifacts
 make clean
+```
+
+---
+
+## Building for Windows (cross-compile from Linux)
+
+You don't need a Windows machine. You can produce a native `ZombieHorde.exe` directly from Linux Mint using the MinGW-w64 cross-compiler.
+
+### Step 1 — Install the cross-compiler
+
+```bash
+sudo apt update
+sudo apt install mingw-w64 cmake
+```
+
+Verify it installed:
+
+```bash
+x86_64-w64-mingw32-g++ --version
+```
+
+### Step 2 — Get GLFW Windows binaries
+
+Download the official prebuilt GLFW binaries for Windows:
+
+```bash
+cd third_party
+wget https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip
+unzip glfw-3.4.bin.WIN64.zip
+rm glfw-3.4.bin.WIN64.zip
+cd ..
+```
+
+### Step 3 — Build Assimp for MinGW
+
+The prebuilt Assimp binaries from GitHub are MSVC-only and won't link with MinGW. Build from source instead:
+
+```bash
+cd ~/Downloads
+git clone https://github.com/assimp/assimp.git
+cd assimp
+git checkout v5.3.1
+
+# create a MinGW toolchain file
+cat > mingw-toolchain.cmake << 'EOF'
+set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
+set(CMAKE_C_COMPILER   x86_64-w64-mingw32-gcc)
+set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
+set(CMAKE_RC_COMPILER  x86_64-w64-mingw32-windres)
+set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+EOF
+
+mkdir build-mingw && cd build-mingw
+
+cmake .. \
+  -DCMAKE_TOOLCHAIN_FILE=../mingw-toolchain.cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/assimp-mingw \
+  -DASSIMP_BUILD_TESTS=OFF \
+  -DASSIMP_BUILD_ASSIMP_TOOLS=OFF \
+  -DASSIMP_BUILD_SAMPLES=OFF \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DASSIMP_BUILD_ZLIB=ON
+
+make -j$(nproc)
+make install
+```
+
+This takes about 5–10 minutes.
+
+### Step 4 — Copy Assimp into your project
+
+```bash
+cd ~/Projects/3DProjects/ZombieHorde   # adjust to your project path
+
+mkdir -p third_party/assimp-win/include
+mkdir -p third_party/assimp-win/lib
+
+cp -r ~/assimp-mingw/include/assimp  third_party/assimp-win/include/
+cp    ~/assimp-mingw/lib/libassimp.a third_party/assimp-win/lib/
+
+# copy the generated config.h (created by cmake, not in the source tree)
+cp ~/Downloads/assimp/build-mingw/include/assimp/config.h \
+   third_party/assimp-win/include/assimp/config.h
+```
+
+### Step 5 — Verify your third_party layout
+
+After completing the above steps, your `third_party/` folder should look like this:
+
+```
+third_party/
+├── glad/
+│   ├── glad.c
+│   ├── glad.h
+│   └── KHR/
+│       └── khrplatform.h
+├── glfw-3.4.bin.WIN64/
+│   ├── include/GLFW/
+│   └── lib-mingw-w64/
+│       └── libglfw3.a
+├── glm/
+│   └── glm/
+│       └── glm.hpp
+├── stb/
+│   └── stb_image.h
+└── assimp-win/
+    ├── include/assimp/
+    │   ├── scene.h
+    │   ├── config.h
+    │   └── ...
+    └── lib/
+        └── libassimp.a
+```
+
+### Step 6 — Cross-compile
+
+```bash
+make windows
+```
+
+This produces `ZombieHorde.exe` in your project root.
+
+### Step 7 — Test with Wine (optional)
+
+You can run the `.exe` on Linux without a Windows machine:
+
+```bash
+sudo apt install wine
+wine ZombieHorde.exe
+```
+
+### Step 8 — Distribute to Windows users
+
+The `.exe` is statically linked — no DLLs needed. Just zip up this folder and share it:
+
+```
+ZombieHorde_release/
+├── ZombieHorde.exe
+└── assets/
+    ├── shaders/
+    ├── textures/
+    └── sounds/
 ```
 
 ---
@@ -104,7 +251,7 @@ ZombieHorde/
 │   ├── shaders/      # GLSL vertex + fragment shaders
 │   ├── textures/     # Walls, floors, zombie sprites, UI
 │   └── sounds/       # Gunshots, growls, ambience
-└── third_party/      # GLAD, GLM, stb_image
+└── third_party/      # GLAD, GLM, stb_image, Assimp, GLFW-win
 ```
 
 ---

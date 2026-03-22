@@ -35,7 +35,7 @@ Enemies are rendered as **billboard sprites** (DOOM-style) — 2D textures that 
 
 ## Screenshots
 
-> _Screenshots will be added once the first playable build is complete._
+https://github.com/user-attachments/assets/01eac872-bf32-4477-9b7e-e50dc434906d
 
 ---
 

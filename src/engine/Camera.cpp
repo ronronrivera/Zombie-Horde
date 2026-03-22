@@ -16,34 +16,35 @@ Camera::Camera(glm::vec3 startPos):
     updateVectors();
 }
 
-void Camera::update(float dt){
-    //mouse look
+void Camera::update(float dt) {
+    // mouse look
     m_yaw   += Input::getMouseDX() * m_mouseSens;
-    m_pitch += Input::getMouseDY() * m_mouseSens; 
-
-    //clamps pitch so camera never flips upside down
-    m_pitch = std::clamp(m_pitch, -MAX_PITCH, MAX_PITCH);
-    
+    m_pitch += Input::getMouseDY() * m_mouseSens;
+    m_pitch  = std::clamp(m_pitch, -MAX_PITCH, MAX_PITCH);
     updateVectors();
 
-    // WASD movement 
-    // move along the flat ground plane — ignore Y component of front
-    // so WASD never floats the player up or down
-    
-    glm::vec3 flatFront = glm::normalize(
-        glm::vec3(m_front.x, 0.0f, m_front.z)
-    );
-    glm::vec3 flatRight = glm::normalize(
-        glm::vec3(m_right.x, 0.0f, m_right.z)
-    );
+    glm::vec3 flatFront = glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z));
+    glm::vec3 flatRight = glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z));
 
-    float speed = m_moveSpeed * dt;
-    
-    if (Input::isKeyHeld(GLFW_KEY_W)) m_position += flatFront * speed;
-    if (Input::isKeyHeld(GLFW_KEY_S)) m_position -= flatFront * speed;
-    if (Input::isKeyHeld(GLFW_KEY_A)) m_position -= flatRight * speed;
-    if (Input::isKeyHeld(GLFW_KEY_D)) m_position += flatRight * speed;
+    // sprint
+    m_isSprinting = Input::isKeyHeld(GLFW_KEY_LEFT_SHIFT);
+    m_isReloading = Input::isKeyHeld(GLFW_KEY_R);
 
+    float speed   = m_moveSpeed * (m_isSprinting ? SPRINT_MULTIPLIER : 1.0f) * dt;
+
+    glm::vec3 move(0.0f);
+    if (Input::isKeyHeld(GLFW_KEY_W)) move += flatFront;
+    if (Input::isKeyHeld(GLFW_KEY_S)) move -= flatFront;
+    if (Input::isKeyHeld(GLFW_KEY_A)) move -= flatRight;
+    if (Input::isKeyHeld(GLFW_KEY_D)) move += flatRight;
+
+    // track actual speed for bob — 0 if standing still
+    m_currentSpeed = (glm::length(move) > 0.0f)
+                   ? m_moveSpeed * (m_isSprinting ? SPRINT_MULTIPLIER : 1.0f)
+                   : 0.0f;
+
+    if (glm::length(move) > 0.0f)
+        m_position += glm::normalize(move) * speed;
 }
 
 void Camera::onResize(int w, int h){

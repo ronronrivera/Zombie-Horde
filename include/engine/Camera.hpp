@@ -21,8 +21,18 @@ public:
     glm::vec3 returnM_up() const {return m_up;}
 
     void setPosition(const glm::vec3& pos) { m_position = pos; }
+
+    float getCurrentSpeed()  const { return m_currentSpeed; }
+    bool  isSprinting()      const { return m_isSprinting; }
+    bool isReloading() const {return m_isReloading;}
+
 private:
     void updateVectors();   // recalculate front/right/up from yaw+pitch
+    
+    float m_currentSpeed = 0.0f;
+    bool  m_isSprinting  = false;
+    bool m_isReloading = false;
+    static constexpr float SPRINT_MULTIPLIER = 1.9f;
 
     glm::vec3 m_position;
     glm::vec3 m_front;
@@ -32,7 +42,7 @@ private:
     float m_yaw         = -90.0f;  // -90 so we start facing -Z (into screen)
     float m_pitch       =   0.0f;
 
-    float m_moveSpeed   =   5.0f;  // units per second
+    float m_moveSpeed   =   3.0f;  // units per second
     float m_mouseSens   =   0.1f;  // degrees per pixel
     float m_fov         =  75.0f;  // degrees
     float m_aspectRatio =  16.0f / 9.0f;

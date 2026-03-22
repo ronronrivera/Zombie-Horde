@@ -4,7 +4,8 @@
 
 class Texture {
 public:
-    Texture(const std::string& path);
+    Texture(const std::string& filePath);
+    Texture(const unsigned char* data, int dataSize);
     ~Texture();
 
     Texture(const Texture&) = delete;

@@ -7,6 +7,8 @@ layout(location = 3) in ivec4 aBoneIDs;
 layout(location = 4) in vec4  aBoneWeights;
 
 out vec2 TexCoord;
+out vec3 FragPos;
+out vec3 Normal;
 
 uniform mat4 uModel;
 uniform mat4 uView;
@@ -23,6 +25,14 @@ void main() {
     // if no bones influence this vertex, skin = identity
     vec4 skinnedPos = skin * vec4(aPos, 1.0);
 
-    gl_Position = uProjection * uView * uModel * skinnedPos;
+    mat3 skinMat      = mat3(skin);
+    vec3 skinnedNorm  = normalize(skinMat * aNormal);
+    mat3 normalMatrix = mat3(transpose(inverse(uModel)));
+
+    vec4 worldPos = uModel * skinnedPos;
+
+    gl_Position = uProjection * uView * worldPos;
     TexCoord    = aTexCoord;
+    FragPos     = worldPos.xyz;
+    Normal      = normalize(normalMatrix * skinnedNorm);
 }

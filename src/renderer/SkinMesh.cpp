@@ -324,7 +324,6 @@ void SkinnedMesh::playAnimation(const std::string& name, bool loop) {
             return;
         }
     }
-    std::cerr << "Animation not found: " << name << "\n";
 }
 
 std::vector<std::string> SkinnedMesh::getAnimationNames() const {

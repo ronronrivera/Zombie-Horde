@@ -7,7 +7,6 @@ Mesh::Mesh(const std::vector<float>& vertices,
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
     glGenBuffers(1, &m_ebo);
-
     glBindVertexArray(m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
@@ -20,15 +19,20 @@ Mesh::Mesh(const std::vector<float>& vertices,
                  indices.size() * sizeof(unsigned int),
                  indices.data(), GL_STATIC_DRAW);
 
-    // layout(location = 0) → position (x, y, z)
+    // layout 0: position (x y z)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), (void*)0);
+                          8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // layout(location = 1) → texcoord (u, v)
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-                          5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // layout 1: normal (nx ny nz)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
+                          8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // layout 2: texcoord (u v)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
+                          8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 }

@@ -4,7 +4,9 @@
 #include "engine/Camera.hpp"
 #include "renderer/Shader.hpp"
 #include "world/TileMap.hpp"
-#include "renderer/SkinnedMesh.hpp"
+#include "world/Lighting.hpp"
+#include "game/ViewModel.hpp"
+#include "ui/FPSCounter.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -13,35 +15,35 @@
 
 int main() {
     try {
-        constexpr const char* ANIM_DRAW = "Armature|Arms_FPS_Anim_Draw";
-        constexpr const char* ANIM_IDLE = "Armature|Arms_FPS_Anim_Idle";
-        constexpr const char* ANIM_WALK = "Armature|Arms_FPS_Anim_Walk";
-        constexpr const char* ANIM_RUN  = "Armature|Arms_FPS_Anim_Run";
-        constexpr const char* RELOAD = "Armature|Arms_FPS_Anim_Reload_Fast";
-
         Window      window(1280, 720, "ZombieHorde");
         Input::init(window.getHandle());
         TileMap     map;
         Camera      camera(map.getPlayerSpawn());
+        Lighting    lighting;
+        FPSCounter  fpsCounter;
 
         Shader      shader("assets/shaders/world.vert",
                            "assets/shaders/world.frag");
         Shader      skinnedShader("assets/shaders/skinned.vert",
                                   "assets/shaders/skinned.frag");
+        Shader      emissiveShader("assets/shaders/eMissive.vert",
+                                   "assets/shaders/eMissive.frag");
 
-        SkinnedMesh hands("assets/ViewModels/hand_rifle.glb");
-
-        for (auto& name : hands.getAnimationNames())
-            std::cout << "Animation: " << name << "\n";
+        ViewModel viewModel;
 
         glEnable(GL_DEPTH_TEST);
 
         constexpr float PLAYER_RADIUS = 0.25f;
 
-        hands.playAnimation(ANIM_DRAW);
         auto update = [&](float dt) {
+
+            
             if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
                 glfwSetWindowShouldClose(window.getHandle(), true);
+            if (Input::isKeyPressed(GLFW_KEY_E))
+                lighting.toggleEnabled();
+            if (Input::isKeyPressed(GLFW_KEY_P))
+                viewModel.toggleDetachFromCamera(camera);
             
 
             glm::vec3 oldPos = camera.getPosition();
@@ -64,15 +66,21 @@ int main() {
 
             bool sprinting = camera.isSprinting();
             bool moving    = camera.getCurrentSpeed() > 0.1f;
-            bool reloading = camera.isReloading();
+            bool triggerHeld = glfwGetMouseButton(window.getHandle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+            bool reloadPressed = Input::isKeyPressed(GLFW_KEY_R);
 
-            if      (sprinting && moving)   hands.playAnimation(ANIM_RUN);
-            else if (moving)                hands.playAnimation(ANIM_WALK);
-            else if(reloading)              hands.playAnimation(RELOAD);
-            else                            hands.playAnimation(ANIM_IDLE);
+            viewModel.update(dt, triggerHeld, reloadPressed, moving, sprinting);
+
+            // Hook for hit/raycast logic: this is true exactly once per bullet fired.
+            if (viewModel.consumeShot()) {
+                // TODO: add hitscan/raycast damage handling here.
+            }
             
 
-            hands.update(dt);
+            lighting.update(camera);
+            fpsCounter.update(window.getHandle(), dt);
+
+
         };
 
         auto render = [&]() {
@@ -80,6 +88,8 @@ int main() {
             shader.bind();
             shader.setMat4("uView",       camera.getViewMatrix());
             shader.setMat4("uProjection", camera.getProjectionMatrix());
+            shader.setVec3("uViewPos", camera.getPosition());
+            lighting.apply(shader);
             map.draw(shader);
 
             // ── pass 2: viewmodel ────────────────────────────
@@ -90,22 +100,10 @@ int main() {
             skinnedShader.bind();
             skinnedShader.setMat4("uView",       camera.getViewMatrix());
             skinnedShader.setMat4("uProjection", camera.getProjectionMatrix());
+            skinnedShader.setVec3("uViewPos", camera.getPosition());
+            lighting.apply(skinnedShader);
 
-            // FPS viewmodel placement:
-            // - centered horizontally
-            // - slightly lowered vertically
-            // - pushed forward along camera Z axis
-            // Model forward is assumed +X, so +90 deg yaw aligns it to camera forward (-Z).
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, -0.26f, -0.005f));
-            model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 1, 1));
-            model = glm::scale(model, glm::vec3(1.0f));
-
-            // attach to camera
-            glm::mat4 invView = glm::inverse(camera.getViewMatrix());
-            skinnedShader.setMat4("uModel", invView * model);
-
-            hands.draw(skinnedShader);
+            viewModel.draw(skinnedShader, emissiveShader, camera);
             glDisable(GL_BLEND);
         };
 

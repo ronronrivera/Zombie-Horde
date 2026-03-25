@@ -4,6 +4,7 @@
 
 // helper - push a quad (2 triangles) into vertex + index buffers
 // p0-p3 are the 4 corners, uv scales for texture tiling
+/*
 static void pushQuad(
     std::vector<float>&         verts,
     std::vector<unsigned int>&  idx,
@@ -29,7 +30,35 @@ static void pushQuad(
         base+2, base+3, base
     });
 }
+*/
 
+static void pushQuad(
+    std::vector<float>&        verts,
+    std::vector<unsigned int>& idx,
+    glm::vec3 p0, glm::vec3 p1,
+    glm::vec3 p2, glm::vec3 p3,
+    glm::vec3 normal)
+{
+    unsigned int base = (unsigned int)(verts.size() / 8);
+
+    // x y z  nx ny nz  u v
+    auto push = [&](glm::vec3 p, float u, float v) {
+        verts.insert(verts.end(), {
+            p.x, p.y, p.z,
+            normal.x, normal.y, normal.z,
+            u, v
+        });
+    };
+    push(p0, 0.0f, 0.0f);
+    push(p1, 1.0f, 0.0f);
+    push(p2, 1.0f, 1.0f);
+    push(p3, 0.0f, 1.0f);
+
+    idx.insert(idx.end(), {
+        base, base+1, base+2,
+        base+2, base+3, base
+    });
+}
 
 TileMap::TileMap() {
     m_wallTex  = std::make_unique<Texture>("assets/textures/walls/brick.jpg");
@@ -58,37 +87,43 @@ void TileMap::buildGeometry(){
                 // south face (toward +Z)
                 if (row+1 < MAP_H && MAP[row+1][col] == 0)
                     pushQuad(wallV, wallI,
-                             {x,     0, z+1}, {x+1, 0, z+1},
-                             {x+1,   1, z+1}, {x,   1, z+1});
+                             {x, 0, z+1}, {x+1, 0, z+1},
+                             {x+1, 1, z+1}, {x, 1, z+1},
+                             {0, 0, 1});
 
                 // north face (toward -Z)
                 if (row-1 >= 0 && MAP[row-1][col] == 0)
                     pushQuad(wallV, wallI,
-                             {x+1, 0, z}, {x,   0, z},
-                             {x,   1, z}, {x+1, 1, z});
+                             {x+1, 0, z}, {x, 0, z},
+                             {x, 1, z}, {x+1, 1, z},
+                             {0, 0, -1});
 
                 // east face (toward +X)
                 if (col+1 < MAP_W && MAP[row][col+1] == 0)
                     pushQuad(wallV, wallI,
-                             {x+1, 0, z},   {x+1, 0, z+1},
-                             {x+1, 1, z+1}, {x+1, 1, z});
+                             {x+1, 0, z}, {x+1, 0, z+1},
+                             {x+1, 1, z+1}, {x+1, 1, z},
+                             {1, 0, 0});
 
                 // west face (toward -X)
                 if (col-1 >= 0 && MAP[row][col-1] == 0)
                     pushQuad(wallV, wallI,
                              {x, 0, z+1}, {x, 0, z},
-                             {x, 1, z},   {x, 1, z+1});
+                             {x, 1, z}, {x, 1, z+1},
+                             {-1, 0, 0});
 
             } else {
                 // ── floor quad ───────────────────────────────────
                 pushQuad(floorV, floorI,
-                         {x,   0, z+1}, {x+1, 0, z+1},
-                         {x+1, 0, z},   {x,   0, z});
+                         {x, 0, z+1}, {x+1, 0, z+1},
+                         {x+1, 0, z}, {x, 0, z},
+                         {0, 1, 0});
 
-                // ── ceiling quad ─────────────────────────────────
+                // ceiling — normal points down
                 pushQuad(ceilV, ceilI,
-                         {x,   1, z},   {x+1, 1, z},
-                         {x+1, 1, z+1}, {x,   1, z+1});
+                         {x, 1, z}, {x+1, 1, z},
+                         {x+1, 1, z+1}, {x, 1, z+1},
+                         {0, -1, 0});
             }
         }
     }

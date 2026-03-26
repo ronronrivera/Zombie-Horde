@@ -36,7 +36,10 @@ Enemies are rendered as **billboard sprites** (DOOM-style) — 2D textures that 
 ## Screenshots
 
 ### Current Output
-https://github.com/user-attachments/assets/771bda61-7538-4f98-8d00-b8d26b0cca34
+
+https://github.com/user-attachments/assets/a2d272e0-2420-4470-a68c-05c784d36f89
+
+
 ---
 
 ## Building on Linux

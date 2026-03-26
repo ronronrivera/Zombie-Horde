@@ -7,16 +7,354 @@
       "-Wextra",
       "-Iinclude",
       "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
       "-g",
       "-DDEBUG",
       "-c",
       "-o",
-      "build/src/main.o",
+      "build/linux/src/main.o",
       "src/main.cpp"
     ],
-    "directory": "/home/ronronrivera/Projects/3DProjects/ZombieHorde",
-    "file": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/src/main.cpp",
-    "output": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/build/src/main.o"
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/main.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/engine/Camera.o",
+      "src/engine/Camera.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/engine/Camera.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/engine/Camera.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/engine/GameLoop.o",
+      "src/engine/GameLoop.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/engine/GameLoop.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/engine/GameLoop.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/engine/Input.o",
+      "src/engine/Input.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/engine/Input.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/engine/Input.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/engine/Window.o",
+      "src/engine/Window.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/engine/Window.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/engine/Window.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/renderer/Bone.o",
+      "src/renderer/Bone.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/renderer/Bone.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/renderer/Bone.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/renderer/Mesh.o",
+      "src/renderer/Mesh.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/renderer/Mesh.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/renderer/Mesh.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/renderer/MuzzleFlash.o",
+      "src/renderer/MuzzleFlash.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/renderer/MuzzleFlash.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/renderer/MuzzleFlash.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/renderer/Shader.o",
+      "src/renderer/Shader.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/renderer/Shader.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/renderer/Shader.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/renderer/SkinMesh.o",
+      "src/renderer/SkinMesh.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/renderer/SkinMesh.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/renderer/SkinMesh.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/renderer/Texture.o",
+      "src/renderer/Texture.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/renderer/Texture.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/renderer/Texture.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/world/Lighting.o",
+      "src/world/Lighting.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/world/Lighting.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/world/Lighting.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/world/TileMap.o",
+      "src/world/TileMap.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/world/TileMap.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/world/TileMap.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/game/ViewModel.o",
+      "src/game/ViewModel.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/game/ViewModel.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/game/ViewModel.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/game/Weapon.o",
+      "src/game/Weapon.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/game/Weapon.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/game/Weapon.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/ui/BitMap.o",
+      "src/ui/BitMap.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/ui/BitMap.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/ui/BitMap.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Ithird_party",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-g",
+      "-DDEBUG",
+      "-c",
+      "-o",
+      "build/linux/src/ui/FPSCounter.o",
+      "src/ui/FPSCounter.cpp"
+    ],
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/src/ui/FPSCounter.cpp",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/src/ui/FPSCounter.o"
   },
   {
     "arguments": [
@@ -24,11 +362,11 @@
       "-Ithird_party",
       "-c",
       "-o",
-      "build/third_party/glad/glad.o",
+      "build/linux/third_party/glad/glad.o",
       "third_party/glad/glad.c"
     ],
-    "directory": "/home/ronronrivera/Projects/3DProjects/ZombieHorde",
-    "file": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/third_party/glad/glad.c",
-    "output": "/home/ronronrivera/Projects/3DProjects/ZombieHorde/build/third_party/glad/glad.o"
+    "directory": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde",
+    "file": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/third_party/glad/glad.c",
+    "output": "/home/ronronrivera/Projects/3DProjects/Zombie-Horde/build/linux/third_party/glad/glad.o"
   }
 ]

@@ -2,7 +2,10 @@
 #include "engine/GameLoop.hpp"
 #include "engine/Input.hpp"
 #include "engine/Camera.hpp"
+#include "engine/AudioManager.hpp"
+#include "engine/SoundPlayer.hpp"
 #include "renderer/Shader.hpp"
+#include "ui/TextRenderer.hpp"
 #include "world/TileMap.hpp"
 #include "world/Lighting.hpp"
 #include "game/ViewModel.hpp"
@@ -12,6 +15,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <string>
 
 int main() {
     try {
@@ -19,8 +23,16 @@ int main() {
         Input::init(window.getHandle());
         TileMap     map;
         Camera      camera(map.getPlayerSpawn());
+        AudioManager audio;
+        SoundPlayer  soundPlayer(audio);
         Lighting    lighting;
         FPSCounter  fpsCounter;
+
+        audio.loadSound("shoot", "assets/sounds/gun_shot.wav");
+        audio.loadSound("reload", "assets/sounds/gun_reload.wav");
+        audio.loadSound("draw", "assets/sounds/gun_draw.wav");
+        audio.loadSound("footstep", "assets/sounds/walk_sound.wav");
+        audio.loadSound("footstep_run", "assets/sounds/walk_sound.wav");
 
         Shader      shader("assets/shaders/world.vert",
                            "assets/shaders/world.frag");
@@ -28,9 +40,13 @@ int main() {
                                   "assets/shaders/skinned.frag");
         Shader      emissiveShader("assets/shaders/eMissive.vert",
                                    "assets/shaders/eMissive.frag");
-
         ViewModel viewModel;
+    
+        
 
+        TextRenderer textRenderer("assets/ttf/JetBrainsMono-Bold.ttf", 20);
+        Shader     hudShader("assets/shaders/hud.vert",
+                             "assets/shaders/hud.frag");
         glEnable(GL_DEPTH_TEST);
 
         constexpr float PLAYER_RADIUS = 0.25f;
@@ -44,6 +60,12 @@ int main() {
                 lighting.toggleEnabled();
             if (Input::isKeyPressed(GLFW_KEY_P))
                 viewModel.toggleDetachFromCamera(camera);
+            static bool vsynOn = false;
+            if (Input::isKeyPressed(GLFW_KEY_V)) {
+                vsynOn = !vsynOn;
+                window.setVSync(vsynOn ? 1 : 0);
+                std::cout << "V-Sync: " << (vsynOn ? "ON" : "OFF") << "\n";
+            }
             
 
             glm::vec3 oldPos = camera.getPosition();
@@ -64,22 +86,39 @@ int main() {
 
             camera.setPosition(newPos);
 
-            bool sprinting = camera.isSprinting();
             bool moving    = camera.getCurrentSpeed() > 0.1f;
+            bool sprinting = camera.isSprinting();
             bool triggerHeld = glfwGetMouseButton(window.getHandle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             bool reloadPressed = Input::isKeyPressed(GLFW_KEY_R);
 
             viewModel.update(dt, triggerHeld, reloadPressed, moving, sprinting);
 
+            bool shotFired = viewModel.consumeShot();
+            bool justDrawStarted = viewModel.consumeDrawStart();
+            static bool wasReloading = false;
+            bool isReloadingNow = viewModel.getWeapon().getState() == WeaponState::Reloading;
+            bool justReloadStarted = isReloadingNow && !wasReloading;
+            wasReloading = isReloadingNow;
+
+            soundPlayer.update(dt, camera.getCurrentSpeed(), sprinting, shotFired, justDrawStarted, justReloadStarted);
+
+            audio.updateListener(camera.getPosition(), camera.getFront(), camera.returnM_up());
+
+            // Update muzzle flash light — position it at the gun barrel
+            // Gun is positioned offset from camera: forward and slightly down
+            glm::vec3 gunBarrelPos = camera.getPosition() 
+                                    + camera.getFront() * 0.1f 
+                                    - glm::vec3(0.0f, 0.15f, 0.0f);
+            lighting.updateMuzzleFlash(dt, gunBarrelPos, viewModel.getWeapon().isMuzzleFlash());
+
             // Hook for hit/raycast logic: this is true exactly once per bullet fired.
-            if (viewModel.consumeShot()) {
+            if (shotFired) {
                 // TODO: add hitscan/raycast damage handling here.
             }
             
 
             lighting.update(camera);
-            fpsCounter.update(window.getHandle(), dt);
-
+            fpsCounter.update(dt);
 
         };
 
@@ -93,9 +132,10 @@ int main() {
             map.draw(shader);
 
             // ── pass 2: viewmodel ────────────────────────────
-            glClear(GL_DEPTH_BUFFER_BIT);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            if (!viewModel.isDetachedFromCamera()) {
+                glClear(GL_DEPTH_BUFFER_BIT);
+            }
+            glDisable(GL_BLEND);
 
             skinnedShader.bind();
             skinnedShader.setMat4("uView",       camera.getViewMatrix());
@@ -104,6 +144,30 @@ int main() {
             lighting.apply(skinnedShader);
 
             viewModel.draw(skinnedShader, emissiveShader, camera);
+
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            
+            textRenderer.drawText(
+                hudShader,
+                fpsCounter.getText(),
+                10.0f, 10.0f,
+                window.getWidth(), window.getHeight(),
+                glm::vec3(0.0f, 1.0f, 0.3f)
+            );
+            std::string ammoText = std::to_string(viewModel.getWeapon().getAmmo()) 
+                                   + " / " 
+                                   + std::to_string(viewModel.getWeapon().getMagSize());
+            textRenderer.drawText(
+                hudShader,
+                ammoText,
+                (float)window.getWidth() - 120.0f,
+                (float)window.getHeight() - 30.0f,
+                window.getWidth(), window.getHeight(),
+                glm::vec3(1.0f, 1.0f, 1.0f)
+            );
+            glEnable(GL_DEPTH_TEST);
             glDisable(GL_BLEND);
         };
 

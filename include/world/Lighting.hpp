@@ -10,7 +10,10 @@ public:
     // call every frame — flashlight follows camera
     void update(const Camera& camera);
 
-    // upload all uniforms to shader before drawing the map
+        // muzzle flash light when firing
+        void updateMuzzleFlash(float dt, glm::vec3 gunPosition, bool isFlashing);
+
+        // upload all uniforms to shader before drawing the map
     void apply(Shader& shader) const;
 
     void toggleEnabled() { m_enabled = !m_enabled; }
@@ -35,4 +38,11 @@ private:
 
     // ambient — VERY dark for horror atmosphere
     glm::vec3 m_ambient   {0.01f, 0.01f, 0.015f}; // barely visible blue-black
+
+    // muzzle flash light properties
+    glm::vec3 m_muzzlePosition {0.0f};
+    glm::vec3 m_muzzleColor    {1.0f, 0.6f, 0.2f}; // warm orange-yellow
+    float m_muzzleIntensity    = 0.0f;  // fades out after firing
+    float m_muzzleTimer        = 0.0f;
+    static constexpr float MUZZLE_DURATION = 0.12f; // fade out duration
 };

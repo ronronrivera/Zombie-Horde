@@ -26,8 +26,11 @@ void Camera::update(float dt) {
     glm::vec3 flatFront = glm::normalize(glm::vec3(m_front.x, 0.0f, m_front.z));
     glm::vec3 flatRight = glm::normalize(glm::vec3(m_right.x, 0.0f, m_right.z));
 
-    // sprint
-    m_isSprinting = Input::isKeyHeld(GLFW_KEY_LEFT_SHIFT);
+    // Sprint is disabled while firing input is held.
+    GLFWwindow* window = glfwGetCurrentContext();
+    const bool isFiringHeld = window &&
+        glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    m_isSprinting = Input::isKeyHeld(GLFW_KEY_LEFT_SHIFT) && !isFiringHeld;
     m_isReloading = Input::isKeyHeld(GLFW_KEY_R);
 
     float speed   = m_moveSpeed * (m_isSprinting ? SPRINT_MULTIPLIER : 1.0f) * dt;

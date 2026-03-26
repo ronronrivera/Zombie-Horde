@@ -33,6 +33,9 @@ ViewModel::ViewModel()
         "Armature|Arms_FPS_Anim_Shoot",
         "Armature|Arms_FPS_Anim_Fire"
     }, "Armature|Arms_FPS_Anim_Idle");
+
+    m_drawDurationSec = m_hands.getAnimationDuration(m_animDraw, 0.85f);
+    m_weapon.setReloadDuration(m_hands.getAnimationDuration(m_animReload, 2.0f));
 }
 
 std::string ViewModel::chooseAnim(
@@ -61,9 +64,12 @@ void ViewModel::update(float dt, bool triggerHeld, bool reloadPressed,
     m_weapon.update(dt, triggerHeld, reloadPressed);
 
     if (!m_drawFinished) {
+        if (m_drawTimer <= 0.0f) {
+            m_justDrawStarted = true;
+        }
         m_hands.playAnimation(m_animDraw, false);
         m_drawTimer += dt;
-        if (m_drawTimer >= DRAW_DURATION_SEC) {
+        if (m_drawTimer >= m_drawDurationSec) {
             m_drawFinished = true;
         }
     } else {
@@ -74,7 +80,7 @@ void ViewModel::update(float dt, bool triggerHeld, bool reloadPressed,
         }
 
         if (m_weapon.getState() == WeaponState::Reloading) {
-            m_hands.playAnimation(m_animReload);
+            m_hands.playAnimation(m_animReload, false);
         } else if (m_fireAnimHold > 0.0f) {
             m_hands.playAnimation(m_animFire, false);
         } else if (sprinting && moving) {
@@ -103,7 +109,8 @@ void ViewModel::draw(Shader& skinnedShader, Shader& emissiveShader,
     emissiveShader.bind();
     emissiveShader.setMat4("uView", camera.getViewMatrix());
     emissiveShader.setMat4("uProjection", camera.getProjectionMatrix());
-    m_muzzleFlash.draw(emissiveShader, viewModelWorld, m_weapon.isMuzzleFlash(), m_frameDt);
+    m_muzzleFlash.draw(emissiveShader, viewModelWorld, m_weapon.isMuzzleFlash(), m_frameDt,
+                       false);
 }
 
 void ViewModel::toggleDetachFromCamera(const Camera& camera) {

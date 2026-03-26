@@ -36,7 +36,7 @@ Window::Window (int width, int height, const std::string &title):
 
     glfwSetFramebufferSizeCallback(m_handle, framebufferResizeCallback);
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     glViewport(0, 0, width, height);
 
@@ -66,6 +66,10 @@ void Window::swapBuffers(){
 
 void Window::pollEvents() {
     glfwPollEvents();
+}
+
+void Window::setVSync(int interval) {
+    glfwSwapInterval(interval);
 }
 
 void Window::framebufferResizeCallback(GLFWwindow*, int w, int h) {

@@ -16,7 +16,7 @@ MuzzleFlash::MuzzleFlash() {
 }
 
 void MuzzleFlash::draw(Shader& shader, const glm::mat4& viewModelWorld,
-                       bool active, float dt) const
+                       bool active, float dt, bool ignoreDepth) const
 {
     if (!active) return;
 
@@ -38,14 +38,31 @@ void MuzzleFlash::draw(Shader& shader, const glm::mat4& viewModelWorld,
     // simplest: just set a solid color uniform
     shader.setVec4("uColor", glm::vec4(1.0f, 1.0f, 0.2f, 1.0f));
 
-    // Draw as additive sprite and ignore depth so it is not hidden by the gun mesh.
-    glDepthMask(GL_FALSE);
-    glDisable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    // Draw as a solid flash quad; in detached mode this should obey world depth.
+    GLboolean wasBlendEnabled = glIsEnabled(GL_BLEND);
+    GLboolean wasDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+    GLboolean wasDepthMask = GL_TRUE;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &wasDepthMask);
+
+    if (ignoreDepth) {
+        glDepthMask(GL_FALSE);
+        glDisable(GL_DEPTH_TEST);
+    } else {
+        glDepthMask(GL_TRUE);
+        glEnable(GL_DEPTH_TEST);
+    }
+    glDisable(GL_BLEND);
 
     m_mesh->draw();
 
+    if (wasBlendEnabled) {
+        glEnable(GL_BLEND);
+    }
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
+    if (wasDepthTestEnabled) {
+        glEnable(GL_DEPTH_TEST);
+    } else {
+        glDisable(GL_DEPTH_TEST);
+    }
+    glDepthMask(wasDepthMask);
 }

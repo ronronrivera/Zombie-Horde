@@ -13,11 +13,11 @@ SRCS := src/main.cpp \
         third_party/glad/glad.c
 
 # ── shared flags ──────────────────────────────────────────
-INCLUDES := -Iinclude -Ithird_party
+INCLUDES := -Iinclude -Ithird_party -I/usr/include/freetype2 -I/usr/include/libpng16
 CXXFLAGS  := -std=c++17 -Wall -Wextra $(INCLUDES)
 
 # ── Linux flags ───────────────────────────────────────────
-LINUX_LDFLAGS  := -lglfw -lGL -ldl -lassimp
+LINUX_LDFLAGS  := -lglfw -lGL -ldl -lassimp -lopenal -lfreetype
 LINUX_TARGET   := ZombieHorde
 
 # ── Windows cross-compile flags ───────────────────────────
@@ -25,13 +25,22 @@ WIN_INCLUDES := -Ithird_party/glfw-3.4.bin.WIN64/include \
                 -Ithird_party/glm \
                 -Ithird_party \
                 -Ithird_party/glad \
-                -Ithird_party/assimp-win/include
+				-Ithird_party/assimp-win/include \
+				-Ithird_party/freetype-win/include
 
-WIN_LDFLAGS  := -Lthird_party/glfw-3.4.bin.WIN64/lib-mingw-w64 \
-                -Lthird_party/assimp-win/lib \
-                -lglfw3 -lopengl32 -lgdi32 \
-                -lassimp -lz \
-                -static-libgcc -static-libstdc++
+WIN_LDFLAGS := \
+			   -Lthird_party/glfw-3.4.bin.WIN64/lib-mingw-w64 \
+			   -Lthird_party/assimp-win/lib \
+			   -Lthird_party/openal-win \
+			   -Lthird_party/openal-win/lib \
+			   -Lthird_party/freetype-win \
+			   -Lthird_party/freetype-win/release\ dll/x64 \
+			   -L/usr/x86_64-w64-mingw32/lib \
+			   -lglfw3 -lopengl32 -lgdi32 \
+			   -lassimp -lz \
+			   -l:libOpenAL32.a \
+			   -lfreetype \
+			   -static-libgcc -static-libstdc++
 
 WIN_TARGET     := ZombieHorde.exe
 

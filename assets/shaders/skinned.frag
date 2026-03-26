@@ -22,6 +22,16 @@ struct SpotLight {
 };
 uniform SpotLight uLight;
 
+struct PointLight {
+    vec3  position;
+    vec3  color;
+    float intensity;
+    float constant;
+    float linear;
+    float quadratic;
+};
+uniform PointLight uMuzzleLight;
+
 void main() {
     vec4 color = texture(uTexture, TexCoord);
     if (color.a < 0.05) discard;
@@ -51,7 +61,21 @@ void main() {
 
     vec3 ambient  = uAmbient * albedo;
     vec3 lighting = (diffuse + specular) * atten * coneStrength;
+
+    // ── muzzle flash point light ─────────────────────────
+    vec3  muzzleVec  = uMuzzleLight.position - FragPos;
+    float muzzleDist = length(muzzleVec);
+    vec3  muzzleDir  = normalize(muzzleVec);
+
+    float muzzleAtten = 1.0 / (uMuzzleLight.constant
+                             + uMuzzleLight.linear    * muzzleDist
+                             + uMuzzleLight.quadratic * muzzleDist * muzzleDist);
+
+    float muzzleDiff   = max(dot(norm, muzzleDir), 0.0);
+    vec3  muzzleDiffuse = muzzleDiff * uMuzzleLight.color * uMuzzleLight.intensity;
+    lighting += muzzleDiffuse * muzzleAtten * albedo;
+
     vec3 result   = ambient + lighting * albedo;
 
-    FragColor = vec4(result, color.a);
+    FragColor = vec4(result, 1.0);
 }

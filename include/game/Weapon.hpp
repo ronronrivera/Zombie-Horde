@@ -21,7 +21,10 @@ public:
     int         getMagSize()    const { return MAG_SIZE; }
     bool        justFired()     const { return m_justFired; }
     bool        isMuzzleFlash() const { return m_muzzleTimer > 0.0f; }
-    float       getReloadT()    const { return m_reloadTimer / RELOAD_TIME; }
+    float       getReloadT()    const { return m_reloadDuration > 0.0f ? (m_reloadTimer / m_reloadDuration) : 0.0f; }
+
+    // Keep gameplay reload length in sync with reload animation clip.
+    void        setReloadDuration(float seconds);
 
     // true on the exact frame a bullet is fired — use for raycast
     bool        consumeShot();
@@ -43,8 +46,8 @@ private:
     static constexpr float MUZZLE_TIME = 0.06f;
     float m_muzzleTimer       = 0.0f;
 
-    // reload duration
-    static constexpr float RELOAD_TIME = 2.0f;
+    // reload duration (seconds)
+    float m_reloadDuration    = 2.0f;
     float m_reloadTimer       = 0.0f;
 
     bool  m_justFired         = false;  // true for one frame only

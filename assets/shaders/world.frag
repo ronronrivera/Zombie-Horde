@@ -23,6 +23,16 @@ struct SpotLight {
 };
 uniform SpotLight uLight;
 
+struct PointLight {
+    vec3  position;
+    vec3  color;
+    float intensity;
+    float constant;
+    float linear;
+    float quadratic;
+};
+uniform PointLight uMuzzleLight;
+
 void main() {
     vec3  texColor  = texture(uTexture, TexCoord).rgb;
     vec3  norm      = normalize(Normal);
@@ -57,6 +67,20 @@ void main() {
     // ── combine ──────────────────────────────────────────
     vec3 ambient  = uAmbient * texColor;
     vec3 lighting = (diffuse + specular) * atten * coneIntensity;
+
+    // ── muzzle flash point light ─────────────────────────
+    vec3  muzzleVec  = uMuzzleLight.position - FragPos;
+    float muzzleDist = length(muzzleVec);
+    vec3  muzzleDir  = normalize(muzzleVec);
+
+    float muzzleAtten = 1.0 / (uMuzzleLight.constant
+                             + uMuzzleLight.linear    * muzzleDist
+                             + uMuzzleLight.quadratic * muzzleDist * muzzleDist);
+
+    float muzzleDiff   = max(dot(norm, muzzleDir), 0.0);
+    vec3  muzzleDiffuse = muzzleDiff * uMuzzleLight.color * uMuzzleLight.intensity;
+    lighting += muzzleDiffuse * muzzleAtten * texColor;
+
     vec3 result   = ambient + lighting * texColor;
 
     // ── horror atmosphere: slight desaturation in dark areas

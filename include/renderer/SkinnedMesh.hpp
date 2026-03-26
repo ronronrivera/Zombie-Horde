@@ -52,6 +52,9 @@ public:
     // switch animation by name ("idle", "walk", "sprint" etc.)
     void playAnimation(const std::string& name, bool loop = true);
 
+    // returns clip duration in seconds, or fallbackSec when not found
+    float getAnimationDuration(const std::string& name, float fallbackSec = 0.0f) const;
+
     // list available animation names (useful for debugging)
     std::vector<std::string> getAnimationNames() const;
 

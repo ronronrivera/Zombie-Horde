@@ -26,8 +26,13 @@ public:
     bool isDetachedFromCamera() const { return m_detachedFromCamera; }
 
     bool consumeShot() { return m_weapon.consumeShot(); }
+    bool consumeDrawStart() {
+        bool justStarted = m_justDrawStarted;
+        m_justDrawStarted = false;
+        return justStarted;
+    }
     const Weapon& getWeapon() const { return m_weapon; }
-
+    
 private:
     std::string chooseAnim(const std::initializer_list<const char*>& candidates,
                            const char* fallback = "") const;
@@ -47,12 +52,13 @@ private:
 
     bool  m_drawFinished = false;
     float m_drawTimer    = 0.0f;
+    float m_drawDurationSec = 0.85f;
+    bool  m_justDrawStarted = false;
     float m_frameDt      = 0.0f;
     float m_fireAnimHold = 0.0f;
 
     bool      m_detachedFromCamera = false;
     glm::mat4 m_detachedWorld      = glm::mat4(1.0f);
 
-    static constexpr float DRAW_DURATION_SEC = 0.85f;
     static constexpr float FIRE_ANIM_HOLD_SEC = 0.08f;
 };

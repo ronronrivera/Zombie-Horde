@@ -326,6 +326,18 @@ void SkinnedMesh::playAnimation(const std::string& name, bool loop) {
     }
 }
 
+float SkinnedMesh::getAnimationDuration(const std::string& name, float fallbackSec) const {
+    for (const auto& clip : m_clips) {
+        if (clip.name == name) {
+            if (clip.ticksPerSec <= 0.0f) {
+                return fallbackSec;
+            }
+            return clip.duration / clip.ticksPerSec;
+        }
+    }
+    return fallbackSec;
+}
+
 std::vector<std::string> SkinnedMesh::getAnimationNames() const {
     std::vector<std::string> names;
     for (auto& c : m_clips) names.push_back(c.name);

@@ -1,4 +1,11 @@
 #include "game/Weapon.hpp"
+#include <GLFW/glfw3.h>
+
+void Weapon::setReloadDuration(float seconds) {
+    if (seconds > 0.0f) {
+        m_reloadDuration = seconds;
+    }
+}
 
 Weapon::Weapon() {}
 
@@ -68,7 +75,7 @@ void Weapon::fireOnce() {
 
 void Weapon::startReload() {
     m_state       = WeaponState::Reloading;
-    m_reloadTimer = RELOAD_TIME;
+    m_reloadTimer = m_reloadDuration;
 }
 
 bool Weapon::consumeShot() {

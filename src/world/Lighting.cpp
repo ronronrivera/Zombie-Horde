@@ -10,6 +10,22 @@ void Lighting::update(const Camera& camera) {
     m_direction = camera.getFront();
 }
 
+    void Lighting::updateMuzzleFlash(float dt, glm::vec3 gunPosition, bool isFlashing) {
+        if (isFlashing) {
+            m_muzzleTimer = MUZZLE_DURATION;
+            m_muzzlePosition = gunPosition;
+        } else if (m_muzzleTimer > 0.0f) {
+            m_muzzleTimer -= dt;
+        }
+
+        // Fade intensity from 0.8 to 0 over the duration
+        if (m_muzzleTimer > 0.0f) {
+            m_muzzleIntensity = (m_muzzleTimer / MUZZLE_DURATION) * 0.8f;
+        } else {
+            m_muzzleIntensity = 0.0f;
+        }
+    }
+
 void Lighting::apply(Shader& shader) const {
     const float effectiveIntensity = m_enabled ? m_intensity : 0.0f;
 
@@ -25,4 +41,12 @@ void Lighting::apply(Shader& shader) const {
     shader.setFloat("uLight.linear",    m_linear);
     shader.setFloat("uLight.quadratic", m_quadratic);
     shader.setVec3("uAmbient", m_ambient);
+
+    // Muzzle flash as a point light (simpler than spotlight)
+    shader.setVec3("uMuzzleLight.position", m_muzzlePosition);
+    shader.setVec3("uMuzzleLight.color", m_muzzleColor);
+    shader.setFloat("uMuzzleLight.intensity", m_muzzleIntensity);
+    shader.setFloat("uMuzzleLight.constant", 1.0f);
+    shader.setFloat("uMuzzleLight.linear", 0.22f);
+    shader.setFloat("uMuzzleLight.quadratic", 0.015f);
 }
